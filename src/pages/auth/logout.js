@@ -5,7 +5,8 @@ export default function LogoutPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    sessionStorage.removeItem("authUser");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("infoUsers");
     return navigate("/sign-in");
   }, []);
   return <div></div>;

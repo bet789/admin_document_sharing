@@ -22,6 +22,19 @@ code {
     line-height: unset !important;
 }
 
+.header .logo {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 0 8px 12px;
+}
+
+.header .logo img {
+    object-fit: contain;
+    height: 100%;
+}
+
 .ant-space-item-header {
     padding: 12px;
 }

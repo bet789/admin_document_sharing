@@ -10,8 +10,11 @@ import DashboardPage from "../pages/dashboard";
 import AccountsPages from "../pages/accounts";
 import PostPages from "../pages/posts";
 import CategoriesPages from "../pages/categories";
+import RolesPages from "../pages/roles";
 
 import { useNavigate, useLocation, Link } from "react-router-dom";
+
+import logo from "../assets/images/taipei101.png";
 
 const { Header, Content, Sider } = Layout;
 const { Text } = Typography;
@@ -50,6 +53,20 @@ const authProtectedRoutes = [
         label: "Tài Khoản",
         key: "accounts",
         path: "/accounts",
+        component: <AccountsPages />,
+        icon: null,
+      },
+      {
+        label: "Vai trò",
+        key: "roles",
+        path: "/roles",
+        component: <RolesPages />,
+        icon: null,
+      },
+      {
+        label: "Hành động",
+        key: "actions",
+        path: "/actions",
         component: <AccountsPages />,
         icon: null,
       },
@@ -109,7 +126,9 @@ const rootSubmenuKeys = authProtectedRoutes.map((item, index) => {
   return item.key;
 });
 
-const ColorList = ["#f56a00", "#7265e6", "#ffbf00", "#00a2ae"];
+const infoUsers = sessionStorage.getItem("infoUsers")
+  ? JSON.parse(sessionStorage.getItem("infoUsers"))
+  : null;
 
 const AuthProtectedLayout = (props) => {
   const [collapsed, setCollapsed] = useState(false);
@@ -125,26 +144,27 @@ const AuthProtectedLayout = (props) => {
 
     let _item = "";
     authProtectedRoutes.forEach((element) => {
-      if (element.children && element.children.length > 0) {
-        if (element.children[0].path === location.pathname) {
-          console.log(element.children[0].path);
-          _item = element;
-          return;
-        }
-      }
+      element.children &&
+        element.children.forEach((elementChildren) => {
+          if (elementChildren.path === location.pathname) {
+            _item = elementChildren;
+            return;
+          }
+        });
     });
     if (!_item) return navigate("/404");
-    setSelectedKeys(_item.children[0].key);
-    setComponents(_item.children[0].component);
+    setSelectedKeys(_item.key);
+    setComponents(_item.component);
   }, [location.pathname]);
 
   const onClickItemMenu = (item) => {
     authProtectedRoutes.forEach((element) => {
-      if (element.children && element.children.length > 0) {
-        if (element.children[0].key === item.key) {
-          return navigate(element.children[0].path);
-        }
-      }
+      element.children &&
+        element.children.forEach((elementChildren) => {
+          if (elementChildren.key === item.key) {
+            return navigate(elementChildren.path);
+          }
+        });
     });
   };
 
@@ -160,7 +180,9 @@ const AuthProtectedLayout = (props) => {
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Header className="header">
-        <div className="logo"></div>
+        <div className="logo">
+          <img src={logo} alt="" />
+        </div>
         <Dropdown
           menu={{
             items,
@@ -169,16 +191,17 @@ const AuthProtectedLayout = (props) => {
           <Space className="ant-space-item-header">
             <Avatar
               style={{
-                backgroundColor:
-                  ColorList[Math.floor(Math.random() * ColorList.length)],
+                backgroundColor: `#${Math.floor(
+                  Math.random() * 16777215
+                ).toString(16)}`,
                 verticalAlign: "middle",
               }}
               size={30}
             >
-              Dee
+              {infoUsers.fullName.charAt(0)}
             </Avatar>
             <Text className="username-sidebar" strong>
-              A Dee
+              {infoUsers.fullName}
             </Text>
           </Space>
         </Dropdown>

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { Button, Form, Input, Col, Row, notification, Typography } from "antd";
 
 import { login } from "../../helpers/helper";
@@ -9,7 +8,10 @@ import bg from "../../assets/images/cover-pattern.png";
 import logo from "../../assets/images/taipei101.png";
 
 const { Title } = Typography;
+
 export default function LoginPage() {
+  document.title = "Đăng nhập";
+
   const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
@@ -20,7 +22,6 @@ export default function LoginPage() {
       username: values.username,
       password: values.password,
     };
-    console.log("🚀 ~ file: login.js:32 ~ onFinish ~ _req", _req);
 
     setLoading(true);
     if (values.username === "a" && values.password === "a") {
@@ -28,30 +29,36 @@ export default function LoginPage() {
       setLoginSuccess(true);
     } else {
       const _res = await login(_req);
-      if (_res.data?.statusCode !== 200) {
+      console.log("Login: ", _res.data);
+
+      if (_res.data?.data === null) {
         setLoading(false);
         return api["error"]({
           message: "Lỗi",
-          description: `${_res.message}`,
+          description: `${_res.data?.message}`,
         });
       }
 
-      if (_res.data?.statusCode === 200) {
+      if (_res.data?.status === 1) {
+        console.log(_res.data);
         setLoading(false);
-        sessionStorage.setItem("authUser", _res.data?.jwt);
-        axios.defaults.headers.common["Authorization"] = _res.data?.jwt;
-        return navigate("/");
+        setLoginSuccess(true);
+        sessionStorage.setItem("token", _res.data?.data.token);
+        sessionStorage.setItem(
+          "infoUsers",
+          JSON.stringify(_res.data?.data.logedInUser)
+        );
       }
     }
   };
 
   const onFinishGGAuth = (values) => {
-    console.log("🚀 ~ file: login.js:52 ~ onFinishGGAuth ~ values", values);
+    setLoading(true);
     if (values.verification_code === "a") {
-      sessionStorage.setItem("authUser", "tokentest");
-      axios.defaults.headers.common["Authorization"] = "tokentest";
-      return navigate("/");
+      setLoading(false);
+      return window.location.replace("/");
     } else {
+      setLoading(false);
       return api["error"]({
         message: "Lỗi",
         description: `Mã Xác thực không đúng, vui lòng thử lại!`,

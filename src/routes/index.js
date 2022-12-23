@@ -13,7 +13,7 @@ import AuthProtectedLayout from "../layouts/";
 
 const Index = () => {
   const AuthProtected = ({ children }) => {
-    let auth = sessionStorage.getItem("authUser") ? true : false;
+    let auth = sessionStorage.getItem("token") ? true : false;
     if (!auth) {
       return <Navigate to="/sign-in" />;
     }

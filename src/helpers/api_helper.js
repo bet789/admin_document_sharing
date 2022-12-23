@@ -1,47 +1,62 @@
 import axios from "axios";
 import { api } from "./config";
-import { message } from "antd";
+import { notification } from "antd";
 
 // default
 // axios.defaults.baseURL = api.API_URL;
-axios.defaults.baseURL = api.API_URL;
+axios.defaults.baseURL = api.API_URL_DEV;
 // content type
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
-const token = sessionStorage.getItem("authUser")
-  ? sessionStorage.getItem("authUser")
+const token = sessionStorage.getItem("token")
+  ? sessionStorage.getItem("token")
   : null;
 
 if (token)
   axios.defaults.headers.common["Authorization"] = token.replace(/"/g, "");
 
-// intercepting to capture errors
-axios.interceptors.response.use(
+// Add a request interceptor
+axios.interceptors.request.use(
   function (config) {
-    const token = sessionStorage.getItem("authUser")
-      ? sessionStorage.getItem("authUser")
+    // Do something before request is sent
+    const token = sessionStorage.getItem("token")
+      ? sessionStorage.getItem("token")
       : null;
 
     if (token)
       axios.defaults.headers.common["Authorization"] = token.replace(/"/g, "");
     return config;
   },
+  function (error) {
+    console.log("Request error: " + error);
+    // Do something with request error
+    return Promise.reject(error);
+  }
+);
+
+// Add a response interceptor
+axios.interceptors.response.use(
   function (response) {
+    // Any status code that lie within the range of 2xx cause this function to trigger
+    // Do something with response data
     return response;
   },
   function (error) {
-    console.error(error);
-    if (error.response.data.message === "jwt expired") {
-      message.error(`Vui lòng đăng nhập để tiếp tục!`);
-      setTimeout(() => {
-        sessionStorage.removeItem("authUser");
-        window.location.replace("/logout");
-      }, 3000);
-    }
+    console.log("Response error: " + error);
+    // Any status codes that falls outside the range of 2xx cause this function to trigger
+    // Do something with response error
 
-    return Promise.reject();
+    if (error === "Request failed with status code 403")
+      // `Request failed with status code 403 - Bạn không có quyền sử dụng chức năng này!`
+      // setTimeout(() => {
+      //   sessionStorage.removeItem("token");
+      //   sessionStorage.removeItem("infoUsers");
+      //   // window.location.replace("/logout");
+      // }, 3000);
+      return Promise.reject(error);
   }
 );
+
 /**
  * Sets the default authorization
  * @param {*} token
@@ -116,7 +131,7 @@ class APIClient {
   };
 }
 const getLoggedinUser = () => {
-  const user = sessionStorage.getItem("authUser");
+  const user = sessionStorage.getItem("token");
   if (!user) {
     return null;
   } else {

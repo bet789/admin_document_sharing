@@ -17,3 +17,8 @@ export const isUserAuthenticated = () => {
 export const login = (data) => {
   return api.post(url.API_LOGIN, data);
 };
+
+//management account
+export const getAllRoles = (data) => {
+  return api.get(url.API_GET_ALL_ROLES, data);
+};
