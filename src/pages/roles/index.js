@@ -1,36 +1,34 @@
 import React, { useEffect, useState } from "react";
-import { Divider, Form, Input, Button, Space, Table } from "antd";
-import { SaveOutlined, SyncOutlined, EditOutlined } from "@ant-design/icons";
-import qs from "qs";
+import {
+  Divider,
+  Form,
+  Input,
+  Button,
+  Space,
+  Table,
+  notification,
+  Popconfirm,
+} from "antd";
+import {
+  SaveOutlined,
+  SyncOutlined,
+  EditOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 
 import BreadcrumbCustom from "../../common/breadcrumb.js";
-import { getAllRoles } from "../../helpers/helper.js";
-const columns = [
-  {
-    title: "Tên Vai trò",
-    dataIndex: "roleName",
-    // render: (name) => `${name.first} ${name.last}`,
-  },
-  {
-    title: "Hành động",
-    dataIndex: "",
-    key: "x",
-    render: () => (
-      <Space>
-        <Button icon={<EditOutlined />} />
-      </Space>
-    ),
-  },
-];
-
-const getRandomuserParams = (params) => ({
-  results: params.pagination?.pageSize,
-  page: params.pagination?.current,
-  ...params,
-});
+import {
+  deleteRole,
+  getAllRoles,
+  inserRole,
+  updateRole,
+} from "../../helpers/helper.js";
+import { textConfirmDelete } from "../../common/const.js";
 
 export default function RolesPages() {
   const [form] = Form.useForm();
+  const [api, contextHolder] = notification.useNotification();
+
   const [loading, setLoading] = useState(false);
   const [loadingTable, setLoadingTable] = useState(false);
   const [textSave, setTextSave] = useState("Lưu");
@@ -47,24 +45,15 @@ export default function RolesPages() {
     setLoadingTable(true);
 
     const _res = await getAllRoles();
-    console.log(_res);
-    // fetch(
-    //   `https://randomuser.me/api?${qs.stringify(
-    //     getRandomuserParams(tableParams)
-    //   )}`
-    // )
-    //   .then((res) => res.json())
-    //   .then(({ results }) => {
-    //     setData(results);
-    //     setLoadingTable(false);
-    //     setTableParams({
-    //       ...tableParams,
-    //       pagination: {
-    //         ...tableParams.pagination,
-    //         total: 200,
-    //       },
-    //     });
-    //   });
+    const _item = _res?.map((item) => {
+      return {
+        id: item.id,
+        roleName: item.roleName,
+      };
+    });
+
+    setData(_item || []);
+    setLoadingTable(false);
   };
 
   useEffect(() => {
@@ -84,19 +73,123 @@ export default function RolesPages() {
     }
   };
 
-  const onFinish = (values) => {};
+  const onFinish = async (values) => {
+    console.log(values);
+    setLoading(true);
+
+    if (!values.id) {
+      //Insert the role
+      const _res = await inserRole(values);
+      if (_res?.data === null) {
+        setLoading(false);
+        return api["error"]({
+          message: "Lỗi",
+          description: _res?.message,
+        });
+      } else {
+        setLoading(false);
+        fetchData();
+        return api["success"]({
+          message: "Thành công",
+          description: "Thêm vai trò thành công!",
+        });
+      }
+    } else {
+      const _res = await updateRole(values);
+      if (_res?.data === null) {
+        setLoading(false);
+        return api["error"]({
+          message: "Lỗi",
+          description: _res?.message,
+        });
+      } else {
+        setLoading(false);
+        fetchData();
+        return api["success"]({
+          message: "Thành công",
+          description: "Cập nhật vai trò thành công!",
+        });
+      }
+    }
+  };
 
   const onFinishFailed = (values) => {};
 
   const onReset = () => {
     form.resetFields();
+    fetchData();
+    setTextSave("Lưu");
   };
+
+  const onEdit = (id) => {
+    setTextSave("Cập nhật");
+    const dataEdit = data.filter((item) => item.id === id);
+    form.setFieldsValue({
+      roleName: dataEdit[0].roleName,
+      id: dataEdit[0].id,
+    });
+  };
+
+  const onDelete = async (id) => {
+    const _res = await deleteRole(id);
+    if (_res?.status !== 1) {
+      setLoading(false);
+      return api["error"]({
+        message: "Lỗi",
+        description: _res?.message,
+      });
+    } else {
+      setLoading(false);
+      fetchData();
+      return api["success"]({
+        message: "Thành công",
+        description: "Xóa vai trò thành công!",
+      });
+    }
+  };
+
+  const columns = [
+    {
+      title: "Tên Vai trò",
+      dataIndex: "roleName",
+      key: "roleName",
+      width: "80%",
+    },
+    {
+      title: "Hành động",
+      dataIndex: "",
+      key: "x",
+      width: "20%",
+      render: (_, record) => (
+        <Space>
+          <Button
+            icon={<EditOutlined />}
+            size="small"
+            onClick={() => onEdit(record.id)}
+            shape="circle"
+          />
+          <Popconfirm
+            placement="top"
+            title={textConfirmDelete}
+            description={""}
+            onConfirm={() => onDelete(record.id)}
+            okText="Xóa"
+            cancelText="Hủy"
+          >
+            <Button icon={<DeleteOutlined />} size="small" shape="circle" />
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
 
   document.title = "QL Vai Trò";
   return (
     <div>
+      {contextHolder}
       <BreadcrumbCustom parentTitle={"QL Vai Trò"} subTitle={"Vai Trò"} />
       <Divider />
+
       <Form
         form={form}
         name="basic"
@@ -113,6 +206,9 @@ export default function RolesPages() {
         onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
+        <Form.Item name="id" label="Id" hidden={true}>
+          <Input name="id" />
+        </Form.Item>
         <Form.Item
           label="Tên vai trò"
           name="roleName"
@@ -150,10 +246,10 @@ export default function RolesPages() {
       <Divider />
 
       <Table
+        size="middle"
         columns={columns}
         rowKey={(record) => {
-          // console.log(record);
-          return record.login.uuid;
+          return record.id;
         }}
         dataSource={data}
         pagination={tableParams.pagination}

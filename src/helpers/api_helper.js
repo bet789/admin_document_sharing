@@ -1,8 +1,13 @@
 import axios from "axios";
 import { api } from "./config";
-import { notification } from "antd";
+import { Typography } from "antd";
 
-// default
+import notificationHook from "../components/hooks/notificationHook";
+
+const { Paragraph } = Typography;
+
+const BEARER = "Bearer ";
+
 // axios.defaults.baseURL = api.API_URL;
 axios.defaults.baseURL = api.API_URL_DEV;
 // content type
@@ -13,18 +18,12 @@ const token = sessionStorage.getItem("token")
   : null;
 
 if (token)
-  axios.defaults.headers.common["Authorization"] = token.replace(/"/g, "");
+  axios.defaults.headers.common["Authorization"] =
+    BEARER + token.replace(/"/g, "");
 
 // Add a request interceptor
 axios.interceptors.request.use(
   function (config) {
-    // Do something before request is sent
-    const token = sessionStorage.getItem("token")
-      ? sessionStorage.getItem("token")
-      : null;
-
-    if (token)
-      axios.defaults.headers.common["Authorization"] = token.replace(/"/g, "");
     return config;
   },
   function (error) {
@@ -37,23 +36,33 @@ axios.interceptors.request.use(
 // Add a response interceptor
 axios.interceptors.response.use(
   function (response) {
+    console.log("🚀 interceptors.response", response);
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
-    return response;
+    return response.data ? response.data : response;
   },
   function (error) {
     console.log("Response error: " + error);
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
 
-    if (error === "Request failed with status code 403")
-      // `Request failed with status code 403 - Bạn không có quyền sử dụng chức năng này!`
-      // setTimeout(() => {
-      //   sessionStorage.removeItem("token");
-      //   sessionStorage.removeItem("infoUsers");
-      //   // window.location.replace("/logout");
-      // }, 3000);
+    if (error.message === "Request failed with status code 403") {
+      notificationHook({
+        type: "error",
+        message: "Lỗi",
+        description: (
+          <>
+            <Paragraph> {error.message} </Paragraph>
+            <Paragraph>Vui lòng đăng nhập lại để tiếp tục sử dụng!</Paragraph>
+          </>
+        ),
+      });
+
+      setTimeout(function () {
+        window.location.replace("/logout");
+      }, 3000);
       return Promise.reject(error);
+    }
   }
 );
 
@@ -62,7 +71,8 @@ axios.interceptors.response.use(
  * @param {*} token
  */
 const setAuthorization = (token) => {
-  axios.defaults.headers.common["Authorization"] = token.replace(/"/g, "");
+  axios.defaults.headers.common["Authorization"] =
+    BEARER + token.replace(/"/g, "");
 };
 
 class APIClient {
@@ -80,7 +90,7 @@ class APIClient {
       await axios
         .get(`${url}?${queryString}`, params)
         .then(function (res) {
-          response = res.data ? res.data : res;
+          response = res;
         })
         .catch(function (error) {
           console.error(error);
@@ -89,7 +99,7 @@ class APIClient {
       await axios
         .get(`${url}`, params)
         .then(function (res) {
-          response = res.data ? res.data : res;
+          response = res;
         })
         .catch(function (error) {
           console.error(error);
@@ -130,8 +140,9 @@ class APIClient {
     });
   };
 }
+
 const getLoggedinUser = () => {
-  const user = sessionStorage.getItem("token");
+  const user = JSON.parse(sessionStorage.getItem("infoUsers"));
   if (!user) {
     return null;
   } else {

@@ -4,6 +4,7 @@ import {
   SwitcherOutlined,
   FormOutlined,
   UserSwitchOutlined,
+  FileImageOutlined,
 } from "@ant-design/icons";
 
 import DashboardPage from "../pages/dashboard";
@@ -11,10 +12,12 @@ import AccountsPages from "../pages/accounts";
 import PostPages from "../pages/posts";
 import CategoriesPages from "../pages/categories";
 import RolesPages from "../pages/roles";
+import MediaPages from "../pages/media";
 
 import { useNavigate, useLocation, Link } from "react-router-dom";
 
 import logo from "../assets/images/taipei101.png";
+import ActionsPages from "../pages/actions";
 
 const { Header, Content, Sider } = Layout;
 const { Text } = Typography;
@@ -67,7 +70,7 @@ const authProtectedRoutes = [
         label: "Hành động",
         key: "actions",
         path: "/actions",
-        component: <AccountsPages />,
+        component: <ActionsPages />,
         icon: null,
       },
     ],
@@ -96,6 +99,20 @@ const authProtectedRoutes = [
         key: "categories",
         path: "/categories",
         component: <CategoriesPages />,
+        icon: null,
+      },
+    ],
+  },
+  {
+    label: "QL Media",
+    key: "manage-media",
+    icon: <FileImageOutlined />,
+    children: [
+      {
+        label: "Media",
+        key: "media",
+        path: "/media",
+        component: <MediaPages />,
         icon: null,
       },
     ],
@@ -153,7 +170,9 @@ const AuthProtectedLayout = (props) => {
         });
     });
     if (!_item) return navigate("/404");
+
     setSelectedKeys(_item.key);
+    handleSetOpenKeys(_item.key);
     setComponents(_item.component);
   }, [location.pathname]);
 
@@ -174,6 +193,22 @@ const AuthProtectedLayout = (props) => {
       setOpenKeys(keys);
     } else {
       setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
+    }
+  };
+
+  const handleSetOpenKeys = (expression) => {
+    switch (expression) {
+      case "posts":
+        setOpenKeys(["manage-posts"]);
+        break;
+      case "categories":
+        setOpenKeys(["manage-categories"]);
+        break;
+      case "media":
+        setOpenKeys(["manage-media"]);
+        break;
+      default:
+        setOpenKeys(["manage-accounts"]);
     }
   };
 

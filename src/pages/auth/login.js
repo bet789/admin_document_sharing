@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button, Form, Input, Col, Row, notification, Typography } from "antd";
 
 import { login } from "../../helpers/helper";
@@ -15,7 +14,6 @@ export default function LoginPage() {
   const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
-  const navigate = useNavigate();
 
   const onFinish = async (values) => {
     const _req = {
@@ -29,27 +27,27 @@ export default function LoginPage() {
       setLoginSuccess(true);
     } else {
       const _res = await login(_req);
-      console.log("Login: ", _res.data);
+      console.log("🚀 ~ file: login.js:30 ~ onFinish ~ _res", _res);
 
-      if (_res.data?.data === null) {
+      if (_res?.data === null) {
         setLoading(false);
         return api["error"]({
           message: "Lỗi",
-          description: `${_res.data?.message}`,
+          description: `${_res?.message}`,
         });
       }
 
-      if (_res.data?.status === 1) {
-        console.log(_res.data);
+      if (_res?.status === 1) {
         setLoading(false);
         setLoginSuccess(true);
-        sessionStorage.setItem("token", _res.data?.data.token);
+        sessionStorage.setItem("token", _res.data?.token);
         sessionStorage.setItem(
           "infoUsers",
-          JSON.stringify(_res.data?.data.logedInUser)
+          JSON.stringify(_res.data?.logedInUser)
         );
       }
     }
+    setLoading(false);
   };
 
   const onFinishGGAuth = (values) => {

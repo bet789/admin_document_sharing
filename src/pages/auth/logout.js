@@ -7,7 +7,7 @@ export default function LogoutPage() {
   useEffect(() => {
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("infoUsers");
-    return navigate("/sign-in");
+    window.location.replace("/sign-in");
   }, []);
   return <div></div>;
 }

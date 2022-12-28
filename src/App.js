@@ -7,11 +7,9 @@ import "./assets/styles/responsive.css";
 
 function App() {
   return (
-    <React.Fragment>
-      <React.StrictMode>
-        <Route />
-      </React.StrictMode>
-    </React.Fragment>
+    <>
+      <Route />
+    </>
   );
 }
 

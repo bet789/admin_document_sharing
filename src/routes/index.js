@@ -8,6 +8,7 @@ import {
 import Login from "../pages/auth/login";
 import Logout from "../pages/auth/logout";
 import Page404 from "../pages/error/404";
+import MediaPages from "../pages/media";
 
 import AuthProtectedLayout from "../layouts/";
 
@@ -35,6 +36,7 @@ const Index = () => {
           <Route element={<Login />} path="/sign-in" />;
           <Route element={<Logout />} path="/logout" />
           <Route element={<Page404 />} path="/404" />
+          <Route element={<MediaPages />} path="/media-public" />
         </Routes>
       </Router>
     </React.Fragment>
