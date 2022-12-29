@@ -50,8 +50,19 @@ code {
     cursor: pointer;
 }
 
+.group-info-sidebar {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
 .username-sidebar {
     color: #fff;
+}
+
+.rolename-sidebar {
+    color: #fff;
+    font-size: 8px;
 }
 
 .login-pages {
@@ -88,4 +99,8 @@ code {
     align-items: flex-start;
     flex-direction: column;
     padding: 10px;
+}
+
+.checkbox-custom label {
+    margin-inline-start: 0 !important;
 }

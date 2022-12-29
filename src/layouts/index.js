@@ -5,6 +5,7 @@ import {
   FormOutlined,
   UserSwitchOutlined,
   FileImageOutlined,
+  UngroupOutlined,
 } from "@ant-design/icons";
 
 import DashboardPage from "../pages/dashboard";
@@ -12,6 +13,7 @@ import AccountsPages from "../pages/accounts";
 import PostPages from "../pages/posts";
 import CategoriesPages from "../pages/categories";
 import RolesPages from "../pages/roles";
+import BranchsPages from "../pages/branchs";
 import MediaPages from "../pages/media";
 
 import { useNavigate, useLocation, Link } from "react-router-dom";
@@ -67,7 +69,7 @@ const authProtectedRoutes = [
         icon: null,
       },
       {
-        label: "Hành động",
+        label: "Phân quyền",
         key: "actions",
         path: "/actions",
         component: <ActionsPages />,
@@ -99,6 +101,20 @@ const authProtectedRoutes = [
         key: "categories",
         path: "/categories",
         component: <CategoriesPages />,
+        icon: null,
+      },
+    ],
+  },
+  {
+    label: "QL Chi Nhánh",
+    key: "manage-branchs",
+    icon: <UngroupOutlined />,
+    children: [
+      {
+        label: "Chi Nhánh",
+        key: "branchs",
+        path: "/branchs",
+        component: <BranchsPages />,
         icon: null,
       },
     ],
@@ -207,6 +223,9 @@ const AuthProtectedLayout = (props) => {
       case "media":
         setOpenKeys(["manage-media"]);
         break;
+      case "branchs":
+        setOpenKeys(["manage-branchs"]);
+        break;
       default:
         setOpenKeys(["manage-accounts"]);
     }
@@ -235,9 +254,12 @@ const AuthProtectedLayout = (props) => {
             >
               {infoUsers.fullName.charAt(0)}
             </Avatar>
-            <Text className="username-sidebar" strong>
-              {infoUsers.fullName}
-            </Text>
+            <div className="group-info-sidebar">
+              <Text className="username-sidebar" strong>
+                {infoUsers.fullName}
+              </Text>
+              <Text className="rolename-sidebar">{infoUsers.roleName}</Text>
+            </div>
           </Space>
         </Dropdown>
       </Header>

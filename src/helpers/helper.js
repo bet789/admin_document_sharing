@@ -18,6 +18,10 @@ export const login = (data) => {
   return api.post(url.API_LOGIN, data);
 };
 
+export const GAuth = (data) => {
+  return api.post(url.API_GAUTH_AUTHENTICATE, data);
+};
+
 //Media server
 export const getAllFileByCollectionID = (data) => {
   return api.get(`${url.API_MEDIA_GET_ALL_FILE_BY_COLLECTIONID}`);
@@ -42,4 +46,29 @@ export const deleteRole = (data) => {
 
 export const getByRoleId = (data) => {
   return api.get(`${url.API_ACTION_GET_BY_ROLE_ID}?roleId=${data}`);
+};
+
+export const getAllActions = () => {
+  return api.get(`${url.API_ACTION_GET_ALL}`);
+};
+
+export const insertManyRoleAction = (data) => {
+  return api.post(`${url.API_ROLE_ACTION_INSERT_MANY}`, data);
+};
+
+//manament branch
+export const getAllBranch = (data) => {
+  return api.get(`${url.API_BRANCH_GET_ALL}`, data);
+};
+
+export const inserBranch = (data) => {
+  return api.post(`${url.API_BRANCH_INSERT}`, data);
+};
+
+export const updateBranch = (data) => {
+  return api.put(url.API_BRANCH_UPDATE, data);
+};
+
+export const deleteBranch = (data) => {
+  return api.delete(`${url.API_BRANCH_DELETE}?id=${data}`);
 };

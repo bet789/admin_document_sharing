@@ -5,26 +5,35 @@ import {
   Input,
   Button,
   Space,
-  Table,
   notification,
   Select,
   Checkbox,
+  Spin,
 } from "antd";
 import { SaveOutlined, SyncOutlined } from "@ant-design/icons";
-
 import BreadcrumbCustom from "../../common/breadcrumb.js";
-import { getAllRoles, getByRoleId } from "../../helpers/helper.js";
+import {
+  getAllRoles,
+  getByRoleId,
+  getAllActions,
+  insertManyRoleAction,
+} from "../../helpers/helper.js";
 
 const { Option } = Select;
 
 export default function ActionsPages() {
   const [form] = Form.useForm();
   const [api, contextHolder] = notification.useNotification();
-
   const [loading, setLoading] = useState(false);
-  const [dataRole, setDataRole] = useState();
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [dataRoleAction, setDataRoleAction] = useState();
+  const [allActions, setAllActions] = useState([]);
+  const [checkedList, setCheckedList] = useState([]);
+  const [checkAll, setCheckAll] = useState(false);
+  const [indeterminate, setIndeterminate] = useState(true);
 
-  const fetchData = async () => {
+  const fetchDataRole = async () => {
+    setLoading(true);
     const _res = await getAllRoles();
     const _item = _res?.map((item) => {
       return {
@@ -33,40 +42,99 @@ export default function ActionsPages() {
       };
     });
 
-    setDataRole(_item || []);
+    setDataRoleAction(_item || []);
+    setLoading(false);
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const onFinish = async (values) => {};
-
-  const onFinishFailed = (values) => {};
-
-  const onReset = () => {
-    form.resetFields();
-    fetchData();
-  };
-
-  const onChangeRole = async (value) => {
-    const _res = await getByRoleId(value);
-    console.log("🚀 ~ file: index.js:61 ~ onChangeRole ~ _res", _res);
-    const _item = _res?.map((item) => {
+  const fetchGetAllActions = async () => {
+    setLoading(true);
+    const _res = await getAllActions();
+    const _items = _res?.map((item) => {
       return {
         id: item.id,
         name: item.name,
       };
     });
+    setAllActions(_items || []);
+    setLoading(false);
   };
 
-  document.title = "QL Hành Động";
+  useEffect(() => {
+    fetchDataRole();
+    fetchGetAllActions();
+  }, []);
+
+  const getListActionIds = (listAction) => {
+    var listActionIds = [];
+    listAction.forEach((element) => {
+      allActions.forEach((_itemAction) => {
+        if (element === _itemAction.name) listActionIds.push(_itemAction.id);
+      });
+    });
+    return listActionIds.join();
+  };
+
+  const onFinish = async (values) => {
+    setLoadingSubmit(true);
+    const _req = {
+      roleId: values.roleId,
+      actionIds: getListActionIds(checkedList),
+    };
+    const _res = await insertManyRoleAction(_req);
+    if (_res.status === 1) {
+      setLoadingSubmit(false);
+      return api["success"]({
+        message: "Thành công",
+        description: "Cập nhật quyền thành công!",
+      });
+    } else {
+      setLoadingSubmit(false);
+      return api["error"]({
+        message: "Lỗi",
+        description: "Cập nhật quyền thất bại!",
+      });
+    }
+  };
+
+  const onFinishFailed = (values) => {};
+
+  const onReset = () => {
+    form.resetFields();
+    fetchDataRole();
+    fetchGetAllActions();
+  };
+
+  const onChangeRole = async (value) => {
+    setLoading(true);
+    const _res = await getByRoleId(value);
+    const _items = _res?.map((item) => {
+      return item.name;
+    });
+    setCheckedList(_items);
+    setLoading(false);
+  };
+
+  const onChange = (list) => {
+    setCheckedList(list);
+    setIndeterminate(!!list.length && list.length < allActions.length);
+    setCheckAll(list.length === allActions.length);
+  };
+  const onCheckAllChange = (e) => {
+    const _allActions = allActions?.map((item) => {
+      return item.name;
+    });
+
+    setCheckedList(e.target.checked ? _allActions : []);
+    setIndeterminate(false);
+    setCheckAll(e.target.checked);
+  };
+
+  document.title = "QL Phân Quyền";
   return (
     <div>
       {contextHolder}
-      <BreadcrumbCustom parentTitle={"QL Hành Động"} subTitle={"Hành Động"} />
+      <BreadcrumbCustom parentTitle={"QL Phân Quyền"} subTitle={"Phân Quyền"} />
       <Divider />
-
       <Form
         form={form}
         name="basic"
@@ -85,7 +153,7 @@ export default function ActionsPages() {
       >
         <Form.Item
           label="Tên vai trò"
-          name="roleName"
+          name="roleId"
           rules={[
             {
               required: true,
@@ -98,8 +166,9 @@ export default function ActionsPages() {
             onChange={onChangeRole}
             allowClear
           >
-            {dataRole &&
-              dataRole?.map((item) => {
+            {dataRoleAction &&
+              dataRoleAction?.map((item) => {
+                if (item.roleName === "ADMIN") return;
                 return (
                   <Option key={item.id} value={item.id}>
                     {item.roleName}
@@ -109,18 +178,43 @@ export default function ActionsPages() {
           </Select>
         </Form.Item>
 
-        <Form.Item name="roleAction" label="Id" hidden={true}>
-          <Input name="id" />
+        <Form.Item name="roleAction" label="Phân quyền">
+          {loading ? (
+            <Spin />
+          ) : (
+            <Space direction="vertical">
+              <Checkbox
+                indeterminate={indeterminate}
+                onChange={onCheckAllChange}
+                checked={checkAll}
+              >
+                Chọn tất cả
+              </Checkbox>
+              <Checkbox.Group
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                }}
+                className="checkbox-custom"
+                options={allActions?.map((item) => {
+                  return item.name;
+                })}
+                value={checkedList}
+                onChange={onChange}
+              />
+            </Space>
+          )}
         </Form.Item>
         <Form.Item>
           <Space>
             <Button
               type="primary"
               htmlType="submit"
-              loading={loading ? true : false}
+              loading={loadingSubmit ? true : false}
               icon={<SaveOutlined />}
             >
-              Lưu
+              Cập nhật
             </Button>
             <Button
               type="primary"
@@ -133,6 +227,7 @@ export default function ActionsPages() {
           </Space>
         </Form.Item>
       </Form>
+      <Divider />
     </div>
   );
 }

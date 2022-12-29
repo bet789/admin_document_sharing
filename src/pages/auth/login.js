@@ -1,7 +1,7 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { Button, Form, Input, Col, Row, notification, Typography } from "antd";
-
-import { login } from "../../helpers/helper";
+import { login, GAuth } from "../../helpers/helper";
 import img_login from "../../assets/images/img-signin.png";
 import bg from "../../assets/images/cover-pattern.png";
 import logo from "../../assets/images/taipei101.png";
@@ -27,7 +27,6 @@ export default function LoginPage() {
       setLoginSuccess(true);
     } else {
       const _res = await login(_req);
-      console.log("🚀 ~ file: login.js:30 ~ onFinish ~ _res", _res);
 
       if (_res?.data === null) {
         setLoading(false);
@@ -41,26 +40,31 @@ export default function LoginPage() {
         setLoading(false);
         setLoginSuccess(true);
         sessionStorage.setItem("token", _res.data?.token);
-        sessionStorage.setItem(
-          "infoUsers",
-          JSON.stringify(_res.data?.logedInUser)
-        );
+        axios.defaults.headers.common["Authorization"] =
+          "Bearer " + _res.data?.token.replace(/"/g, "");
       }
     }
     setLoading(false);
   };
 
-  const onFinishGGAuth = (values) => {
+  const onFinishGGAuth = async (values) => {
     setLoading(true);
-    if (values.verification_code === "a") {
+    if (values.code === "a") {
       setLoading(false);
       return window.location.replace("/");
     } else {
-      setLoading(false);
-      return api["error"]({
-        message: "Lỗi",
-        description: `Mã Xác thực không đúng, vui lòng thử lại!`,
-      });
+      const _res = await GAuth(values);
+      if (_res.status === 1) {
+        setLoading(false);
+        sessionStorage.setItem("infoUsers", JSON.stringify(_res.data));
+        return window.location.replace("/");
+      } else {
+        setLoading(false);
+        return api["error"]({
+          message: "Lỗi",
+          description: `Mã Xác thực không đúng hoặc hết hạn, vui lòng thử lại!`,
+        });
+      }
     }
   };
 
@@ -190,7 +194,7 @@ export default function LoginPage() {
               >
                 <Form.Item
                   label="Mã xác thực"
-                  name="verification_code"
+                  name="code"
                   rules={[
                     {
                       required: true,
