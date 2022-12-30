@@ -33,13 +33,16 @@ export default function BranchsPages() {
   const [loadingTable, setLoadingTable] = useState(false);
   const [textSave, setTextSave] = useState("Lưu");
   const [data, setData] = useState();
-
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: 1,
       pageSize: 10,
     },
   });
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
 
   const fetchData = async () => {
     setLoadingTable(true);
@@ -68,10 +71,6 @@ export default function BranchsPages() {
 
     setLoadingTable(false);
   };
-
-  useEffect(() => {
-    fetchData();
-  }, [JSON.stringify(tableParams)]);
 
   const handleTableChange = (pagination, filters, sorter) => {
     setTableParams({

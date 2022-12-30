@@ -72,3 +72,24 @@ export const updateBranch = (data) => {
 export const deleteBranch = (data) => {
   return api.delete(`${url.API_BRANCH_DELETE}?id=${data}`);
 };
+
+//manament catagory
+export const getCategoryPaging = (data) => {
+  return api.get(`${url.API_CATEGORY_GET_PAGING}`, data);
+};
+
+export const getAllCategory = (data) => {
+  return api.get(`${url.API_CATEGORY_GET_ALL}`, data);
+};
+
+export const inserCategory = (data) => {
+  return api.post(`${url.API_CATEGORY_INSERT}`, data);
+};
+
+export const updateCategory = (data) => {
+  return api.put(url.API_CATEGORY_UPDATE, data);
+};
+
+export const deleteCategory = (data) => {
+  return api.delete(`${url.API_CATEGORY_DELETE}?id=${data}`);
+};

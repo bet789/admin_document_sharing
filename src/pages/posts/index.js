@@ -21,8 +21,10 @@ import {
   CloudUploadOutlined,
 } from "@ant-design/icons";
 
-import { API_MEDIA_DELETE_FILE } from "../../helpers/url_helper";
-
+import {
+  API_MEDIA_DELETE_FILE,
+  API_MEDIA_UPLOAD,
+} from "../../helpers/url_helper";
 import BreadcrumbCustom from "../../common/breadcrumb.js";
 import { mediaServer } from "../../helpers/config.js";
 import { CKEditor } from "ckeditor4-react";
@@ -80,7 +82,7 @@ export default function PostPages() {
       fmData.append("file", file);
       try {
         const response = await fetch(
-          "https://api.bet789.mobi/api/file/Upload?collectionId=ec761ff5-4c55-400f-a9d3-d436bb24c00c",
+          `${mediaServer.API_URL}${API_MEDIA_UPLOAD}${mediaServer.COLLECTIONID}`,
           {
             method: "POST",
             headers: {

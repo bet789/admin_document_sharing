@@ -13,9 +13,17 @@ export const API_ROLE_ACTION_INSERT_MANY = "RoleAction/InsertMany";
 //Media server
 export const API_MEDIA_GET_ALL_FILE_BY_COLLECTIONID = "/file/getbycollectionid";
 export const API_MEDIA_DELETE_FILE = "/file/delete";
+export const API_MEDIA_UPLOAD = "/file/Upload?collectionId=";
 
 //Management branch
 export const API_BRANCH_GET_ALL = "/Branch/GetPaging";
 export const API_BRANCH_INSERT = "/Branch/Insert";
 export const API_BRANCH_UPDATE = "/Branch/Update";
 export const API_BRANCH_DELETE = "/Branch/Delete";
+
+//Management category
+export const API_CATEGORY_GET_PAGING = "/Category/GetPaging";
+export const API_CATEGORY_GET_ALL = "/Category/GetAll";
+export const API_CATEGORY_INSERT = "/Category/Insert";
+export const API_CATEGORY_UPDATE = "/Category/Update";
+export const API_CATEGORY_DELETE = "/Category/Delete";
