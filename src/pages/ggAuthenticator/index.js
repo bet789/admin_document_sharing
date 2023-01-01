@@ -13,8 +13,10 @@ export default function GGAuthenticatorPages() {
   }, []);
 
   const fetListInfoGGAuthenticator = async () => {
+    setLoading(true);
     const _res = await GAuthGetAllManualEntryKeys();
     setData(_res);
+    setLoading(false);
   };
 
   const columns = [
