@@ -63,6 +63,21 @@ axios.interceptors.response.use(
       }, 3000);
       return Promise.reject(error);
     }
+
+    if (error.message === "Request failed with status code 401") {
+      notificationHook({
+        type: "warning",
+        message: "Lỗi",
+        description: (
+          <>
+            <Paragraph> {error.message} </Paragraph>
+            <Paragraph>Bạn không có quyền sử dụng chức năng này!</Paragraph>
+          </>
+        ),
+      });
+
+      return Promise.reject(error);
+    }
   }
 );
 
