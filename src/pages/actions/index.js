@@ -35,27 +35,27 @@ export default function ActionsPages() {
   const fetchDataRole = async () => {
     setLoading(true);
     const _res = await getAllRoles();
-    const _item = _res?.map((item) => {
-      return {
-        id: item.id,
-        roleName: item.roleName,
-      };
-    });
+    // const _item = _res?.map((item) => {
+    //   return {
+    //     id: item.id,
+    //     roleName: item.roleName,
+    //   };
+    // });
 
-    setDataRoleAction(_item || []);
+    setDataRoleAction(_res || []);
     setLoading(false);
   };
 
   const fetchGetAllActions = async () => {
     setLoading(true);
     const _res = await getAllActions();
-    const _items = _res?.map((item) => {
-      return {
-        id: item.id,
-        name: item.name,
-      };
-    });
-    setAllActions(_items || []);
+    // const _items = _res?.map((item) => {
+    //   return {
+    //     id: item.id,
+    //     name: item.name,
+    //   };
+    // });
+    setAllActions(_res || []);
     setLoading(false);
   };
 
@@ -68,9 +68,11 @@ export default function ActionsPages() {
     var listActionIds = [];
     listAction.forEach((element) => {
       allActions.forEach((_itemAction) => {
-        if (element === _itemAction.name) listActionIds.push(_itemAction.id);
+        if (element.toString().trim() === _itemAction.viName)
+          listActionIds.push(_itemAction.id);
       });
     });
+
     return listActionIds.join();
   };
 
@@ -107,8 +109,9 @@ export default function ActionsPages() {
   const onChangeRole = async (value) => {
     setLoading(true);
     const _res = await getByRoleId(value);
+    console.log("🚀 ~ file: index.js:112 ~ onChangeRole ~ _res", _res);
     const _items = _res?.map((item) => {
-      return item.name;
+      return item.viName;
     });
     setCheckedList(_items);
     setLoading(false);
@@ -119,9 +122,10 @@ export default function ActionsPages() {
     setIndeterminate(!!list.length && list.length < allActions.length);
     setCheckAll(list.length === allActions.length);
   };
+
   const onCheckAllChange = (e) => {
     const _allActions = allActions?.map((item) => {
-      return item.name;
+      return item.viName;
     });
 
     setCheckedList(e.target.checked ? _allActions : []);
@@ -190,6 +194,7 @@ export default function ActionsPages() {
               >
                 Chọn tất cả
               </Checkbox>
+              {console.log(checkedList)}
               <Checkbox.Group
                 style={{
                   display: "flex",
@@ -198,7 +203,7 @@ export default function ActionsPages() {
                 }}
                 className="checkbox-custom"
                 options={allActions?.map((item) => {
-                  return item.name;
+                  return item.viName;
                 })}
                 value={checkedList}
                 onChange={onChange}

@@ -104,3 +104,11 @@ code {
 .checkbox-custom label {
     margin-inline-start: 0 !important;
 }
+
+#basic_thumbnail>div:nth-child(1) {
+    width: 100%;
+}
+
+.img-table {
+    object-fit: contain;
+}

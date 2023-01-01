@@ -20,6 +20,7 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 
 import logo from "../assets/images/taipei101.png";
 import ActionsPages from "../pages/actions";
+import GGAuthenticatorPages from "../pages/ggAuthenticator";
 
 const { Header, Content, Sider } = Layout;
 const { Text } = Typography;
@@ -59,6 +60,13 @@ const authProtectedRoutes = [
         key: "accounts",
         path: "/accounts",
         component: <AccountsPages />,
+        icon: null,
+      },
+      {
+        label: "GG Authenticator",
+        key: "gg-authenticator",
+        path: "/gg-authenticator",
+        component: <GGAuthenticatorPages />,
         icon: null,
       },
       {

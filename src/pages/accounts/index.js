@@ -10,6 +10,7 @@ import {
   Popconfirm,
   Row,
   Col,
+  Select,
 } from "antd";
 import {
   SaveOutlined,
@@ -17,13 +18,14 @@ import {
   EditOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-
 import BreadcrumbCustom from "../../common/breadcrumb.js";
 import {
-  deleteRole,
   getAllRoles,
-  inserRole,
-  updateRole,
+  getUserPaging,
+  inserUser,
+  updateUser,
+  deleteUser,
+  getAllBranch,
 } from "../../helpers/helper.js";
 import { textConfirmDelete } from "../../common/const.js";
 
@@ -33,8 +35,11 @@ export default function AccountsPages() {
 
   const [loading, setLoading] = useState(false);
   const [loadingTable, setLoadingTable] = useState(false);
+  const [listRole, setListRole] = useState([]);
+  const [listBranch, setListBranch] = useState([]);
   const [textSave, setTextSave] = useState("Lưu");
   const [data, setData] = useState();
+  const [showBranch, setShowBranch] = useState(true);
 
   const [tableParams, setTableParams] = useState({
     pagination: {
@@ -43,24 +48,42 @@ export default function AccountsPages() {
     },
   });
 
-  const fetchData = async () => {
+  useEffect(() => {
+    fetchDataAccount();
+    fetchDataBranch();
+  }, []);
+
+  useEffect(() => {
+    fetchDataRole();
+  }, [JSON.stringify(tableParams)]);
+
+  const fetchDataAccount = async () => {
     setLoadingTable(true);
-
-    const _res = await getAllRoles();
-    const _item = _res?.map((item) => {
-      return {
-        id: item.id,
-        roleName: item.roleName,
-      };
+    const _res = await getUserPaging();
+    setData(_res.data || []);
+    setTableParams({
+      ...tableParams,
+      pagination: {
+        ...tableParams.pagination,
+        total: _res.data?.totalRecord,
+      },
     });
-
-    setData(_item || []);
     setLoadingTable(false);
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [JSON.stringify(tableParams)]);
+  const fetchDataRole = async () => {
+    setLoading(true);
+    const _res = await getAllRoles();
+    setListRole(_res || []);
+    setLoading(false);
+  };
+
+  const fetchDataBranch = async () => {
+    setLoading(true);
+    const _res = await getAllBranch();
+    setListBranch(_res?.data || []);
+    setLoading(false);
+  };
 
   const handleTableChange = (pagination, filters, sorter) => {
     setTableParams({
@@ -78,10 +101,8 @@ export default function AccountsPages() {
   const onFinish = async (values) => {
     console.log(values);
     setLoading(true);
-
     if (!values.id) {
-      //Insert the role
-      const _res = await inserRole(values);
+      const _res = await inserUser(values);
       if (_res?.data === null) {
         setLoading(false);
         return api["error"]({
@@ -90,14 +111,14 @@ export default function AccountsPages() {
         });
       } else {
         setLoading(false);
-        fetchData();
+        fetchDataAccount();
         return api["success"]({
           message: "Thành công",
-          description: "Thêm vai trò thành công!",
+          description: "Thêm người dùng thành công!",
         });
       }
     } else {
-      const _res = await updateRole(values);
+      const _res = await updateUser(values);
       if (_res?.data === null) {
         setLoading(false);
         return api["error"]({
@@ -106,10 +127,10 @@ export default function AccountsPages() {
         });
       } else {
         setLoading(false);
-        fetchData();
+        fetchDataAccount();
         return api["success"]({
           message: "Thành công",
-          description: "Cập nhật vai trò thành công!",
+          description: "Cập nhật người dùng thành công!",
         });
       }
     }
@@ -119,7 +140,7 @@ export default function AccountsPages() {
 
   const onReset = () => {
     form.resetFields();
-    fetchData();
+    fetchDataAccount();
     setTextSave("Lưu");
   };
 
@@ -127,13 +148,19 @@ export default function AccountsPages() {
     setTextSave("Cập nhật");
     const dataEdit = data.filter((item) => item.id === id);
     form.setFieldsValue({
-      roleName: dataEdit[0].roleName,
       id: dataEdit[0].id,
+      roleId: dataEdit[0].roleId,
+      branchId: dataEdit[0].branchId,
+      fullName: dataEdit[0].fullName,
+      userName: dataEdit[0].userName,
     });
+
+    if (dataEdit[0].roleName === "ADMIN") setShowBranch(false);
+    else setShowBranch(true);
   };
 
   const onDelete = async (id) => {
-    const _res = await deleteRole(id);
+    const _res = await deleteUser(id);
     if (_res?.status !== 1) {
       setLoading(false);
       return api["error"]({
@@ -142,46 +169,69 @@ export default function AccountsPages() {
       });
     } else {
       setLoading(false);
-      fetchData();
+      fetchDataAccount();
       return api["success"]({
         message: "Thành công",
-        description: "Xóa vai trò thành công!",
+        description: "Xóa người dùng thành công!",
       });
     }
   };
 
+  const onSelectRole = (id, data) => {
+    if (data.label === "ADMIN") setShowBranch(false);
+    else setShowBranch(true);
+  };
+
   const columns = [
     {
-      title: "Tên Vai trò",
+      title: "Họ và tên",
+      dataIndex: "fullName",
+      key: "fullName",
+    },
+    {
+      title: "Tên đăng nhập",
+      dataIndex: "userName",
+      key: "userName",
+    },
+    {
+      title: "Vai trò",
       dataIndex: "roleName",
       key: "roleName",
-      width: "80%",
+    },
+    {
+      title: "Chi nhánh",
+      dataIndex: "branchName",
+      key: "branchName",
     },
     {
       title: "Hành động",
       dataIndex: "",
       key: "x",
       width: "20%",
-      render: (_, record) => (
-        <Space>
-          <Button
-            icon={<EditOutlined />}
-            size="small"
-            onClick={() => onEdit(record.id)}
-            shape="circle"
-          />
-          <Popconfirm
-            placement="top"
-            title={textConfirmDelete}
-            description={""}
-            onConfirm={() => onDelete(record.id)}
-            okText="Xóa"
-            cancelText="Hủy"
-          >
-            <Button icon={<DeleteOutlined />} size="small" shape="circle" />
-          </Popconfirm>
-        </Space>
-      ),
+      render: (_, record) => {
+        if (record.userName === "admin") return;
+
+        return (
+          <Space>
+            <Button
+              icon={<EditOutlined />}
+              size="small"
+              onClick={() => onEdit(record.id)}
+              shape="circle"
+            />
+            <Popconfirm
+              placement="top"
+              title={textConfirmDelete}
+              description={""}
+              onConfirm={() => onDelete(record.id)}
+              okText="Xóa"
+              cancelText="Hủy"
+            >
+              <Button icon={<DeleteOutlined />} size="small" shape="circle" />
+            </Popconfirm>
+          </Space>
+        );
+      },
     },
   ];
 
@@ -212,7 +262,7 @@ export default function AccountsPages() {
         <Form.Item name="id" label="Id" hidden={true}>
           <Input name="id" />
         </Form.Item>
-        <Row gutter={[16, 16]}>
+        <Row gutter={[16, 0]}>
           <Col span={6}>
             <Form.Item
               label="Họ và tên"
@@ -243,18 +293,104 @@ export default function AccountsPages() {
           </Col>
           <Col span={6}>
             <Form.Item
-              label="Mật khẩu"
+              label="Mật khẩu "
               name="password"
               rules={[
                 {
-                  required: true,
+                  required:
+                    textSave.toUpperCase() === "CẬP NHẬT" ? false : true,
                   message: "Vui lòng nhập mật khẩu",
                 },
               ]}
             >
-              <Input.Password placeholder="Nhập mật khẩu" />
+              <Input.Password
+                placeholder="Nhập mật khẩu"
+                autoComplete="new-password"
+              />
             </Form.Item>
           </Col>
+          <Col span={6}>
+            <Form.Item
+              label="Vai trò"
+              name="roleId"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn vai trò!",
+                },
+              ]}
+            >
+              <Select
+                allowClear
+                showSearch
+                style={{
+                  width: "100%",
+                }}
+                onSelect={onSelectRole}
+                placeholder="Chọn vai trò"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label ?? "").toLowerCase().includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? "")
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? "").toLowerCase())
+                }
+                options={
+                  listRole &&
+                  listRole?.map((item, i) => {
+                    return {
+                      value: item.id,
+                      label: item.roleName,
+                    };
+                  })
+                }
+              />
+            </Form.Item>
+          </Col>
+
+          {showBranch && (
+            <Col span={6}>
+              <Form.Item
+                label="Chi nhánh"
+                name="branchId"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn chi nhánh!",
+                  },
+                ]}
+              >
+                <Select
+                  allowClear
+                  showSearch
+                  style={{
+                    width: "100%",
+                  }}
+                  placeholder="Chọn chi nhánh"
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    (option?.label ?? "").toLowerCase().includes(input)
+                  }
+                  filterSort={(optionA, optionB) =>
+                    (optionA?.label ?? "")
+                      .toLowerCase()
+                      .localeCompare((optionB?.label ?? "").toLowerCase())
+                  }
+                  options={
+                    listBranch &&
+                    listBranch?.map((item, i) => {
+                      return {
+                        value: item.id,
+                        label: item.name,
+                      };
+                    })
+                  }
+                />
+              </Form.Item>
+            </Col>
+          )}
         </Row>
         <Form.Item>
           <Space>
@@ -280,7 +416,7 @@ export default function AccountsPages() {
 
       <Divider />
 
-      {/* <Table
+      <Table
         size="middle"
         columns={columns}
         rowKey={(record) => {
@@ -290,7 +426,7 @@ export default function AccountsPages() {
         pagination={tableParams.pagination}
         loading={loadingTable}
         onChange={handleTableChange}
-      /> */}
+      />
     </div>
   );
 }

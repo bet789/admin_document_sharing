@@ -160,26 +160,29 @@ export default function RolesPages() {
       dataIndex: "",
       key: "x",
       width: "20%",
-      render: (_, record) => (
-        <Space>
-          <Button
-            icon={<EditOutlined />}
-            size="small"
-            onClick={() => onEdit(record.id)}
-            shape="circle"
-          />
-          <Popconfirm
-            placement="top"
-            title={textConfirmDelete}
-            description={""}
-            onConfirm={() => onDelete(record.id)}
-            okText="Xóa"
-            cancelText="Hủy"
-          >
-            <Button icon={<DeleteOutlined />} size="small" shape="circle" />
-          </Popconfirm>
-        </Space>
-      ),
+      render: (_, record) => {
+        if (record.roleName !== "ADMIN")
+          return (
+            <Space>
+              <Button
+                icon={<EditOutlined />}
+                size="small"
+                onClick={() => onEdit(record.id)}
+                shape="circle"
+              />
+              <Popconfirm
+                placement="top"
+                title={textConfirmDelete}
+                description={""}
+                onConfirm={() => onDelete(record.id)}
+                okText="Xóa"
+                cancelText="Hủy"
+              >
+                <Button icon={<DeleteOutlined />} size="small" shape="circle" />
+              </Popconfirm>
+            </Space>
+          );
+      },
     },
   ];
 

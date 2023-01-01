@@ -9,3 +9,9 @@ export function formatBytes(bytes, decimals = 2) {
 
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
+
+export function ellipsisMiddle(text, suffixCount) {
+  return text.length > suffixCount
+    ? text.slice(0, suffixCount).trim() + "..."
+    : text;
+}

@@ -50,6 +50,9 @@ export default function CategoriesPages() {
   useEffect(() => {
     fetchListBranch();
     fetchAllCategory();
+  }, []);
+
+  useEffect(() => {
     fetchCategoryPaging();
   }, [JSON.stringify(tableParams)]);
 
@@ -71,16 +74,7 @@ export default function CategoriesPages() {
       pageSize: tableParams.pagination.pageSize,
     };
     const _res = await getCategoryPaging(param);
-    const _item = _res.data?.map((item) => {
-      return {
-        id: item.id,
-        branchName: item.branchName,
-        name: item.name,
-        parentId: item.parentId,
-      };
-    });
-
-    setData(_item || []);
+    setData(_res?.data || []);
     setTableParams({
       ...tableParams,
       pagination: {
@@ -106,9 +100,7 @@ export default function CategoriesPages() {
   };
 
   const onFinish = async (values) => {
-    console.log(values);
     setLoading(true);
-
     if (!values.id) {
       const _req = {
         name: values.name,
@@ -127,9 +119,10 @@ export default function CategoriesPages() {
       } else {
         setLoading(false);
         fetchCategoryPaging();
+        fetchAllCategory();
         return api["success"]({
           message: "Thành công",
-          description: "Thêm chi nhánh thành công!",
+          description: "Thêm chuyên mục thành công!",
         });
       }
     } else {
@@ -152,7 +145,7 @@ export default function CategoriesPages() {
         fetchCategoryPaging();
         return api["success"]({
           message: "Thành công",
-          description: "Cập nhật chi nhánh thành công!",
+          description: "Cập nhật chuyên mục thành công!",
         });
       }
     }
@@ -169,10 +162,13 @@ export default function CategoriesPages() {
   const onEdit = (id) => {
     setTextSave("Cập nhật");
     const dataEdit = data.filter((item) => item.id === id);
+    const dataBranch = listBranch.filter(
+      (item) => item.name === dataEdit[0].branchName
+    );
     form.setFieldsValue({
       id: dataEdit[0].id,
       name: dataEdit[0].name,
-      branchId: dataEdit[0].branhId || null,
+      branhId: dataBranch[0].id || null,
       parentId: dataEdit[0].parentId || null,
     });
   };
@@ -190,7 +186,7 @@ export default function CategoriesPages() {
       fetchCategoryPaging();
       return api["success"]({
         message: "Thành công",
-        description: "Xóa chi nhánh thành công!",
+        description: "Xóa chuyên mục thành công!",
       });
     }
   };
@@ -208,8 +204,8 @@ export default function CategoriesPages() {
     },
     {
       title: "Chuyên mục cha",
-      dataIndex: "parentId",
-      key: "parentId",
+      dataIndex: "parentCategoryName",
+      key: "parentCategoryName",
     },
     {
       title: "Hành động",
@@ -337,7 +333,7 @@ export default function CategoriesPages() {
                 placeholder="Chọn chuyên mục cha"
                 optionFilterProp="children"
                 filterOption={(input, option) =>
-                  (option?.label ?? "").includes(input)
+                  (option?.label ?? "").toLowerCase().includes(input)
                 }
                 filterSort={(optionA, optionB) =>
                   (optionA?.label ?? "")

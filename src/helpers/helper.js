@@ -22,6 +22,10 @@ export const GAuth = (data) => {
   return api.post(url.API_GAUTH_AUTHENTICATE, data);
 };
 
+export const GAuthGetAllManualEntryKeys = (data) => {
+  return api.get(url.API_GAUTH_GET_MANUAL_ENTRY_KEYS, data);
+};
+
 //Media server
 export const getAllFileByCollectionID = (data) => {
   return api.get(`${url.API_MEDIA_GET_ALL_FILE_BY_COLLECTIONID}`);
@@ -54,6 +58,22 @@ export const getAllActions = () => {
 
 export const insertManyRoleAction = (data) => {
   return api.post(`${url.API_ROLE_ACTION_INSERT_MANY}`, data);
+};
+
+export const getUserPaging = (data) => {
+  return api.get(`${url.API_USER_GET_PAGING}`, data);
+};
+
+export const inserUser = (data) => {
+  return api.post(`${url.API_USER_INSERT}`, data);
+};
+
+export const updateUser = (data) => {
+  return api.put(url.API_USER_UPDATE, data);
+};
+
+export const deleteUser = (data) => {
+  return api.delete(`${url.API_USER_DELETE}?id=${data}`);
 };
 
 //manament branch
@@ -92,4 +112,21 @@ export const updateCategory = (data) => {
 
 export const deleteCategory = (data) => {
   return api.delete(`${url.API_CATEGORY_DELETE}?id=${data}`);
+};
+
+//manament post
+export const getPostPaging = (data) => {
+  return api.get(`${url.API_POST_GET_PAGING}`, data);
+};
+
+export const inserPost = (data) => {
+  return api.post(`${url.API_POST_INSERT}`, data);
+};
+
+export const updatePost = (data) => {
+  return api.put(url.API_POST_UPDATE, data);
+};
+
+export const deletePost = (data) => {
+  return api.delete(`${url.API_POST_DELETE}?id=${data}`);
 };
