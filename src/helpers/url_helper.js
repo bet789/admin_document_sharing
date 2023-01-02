@@ -9,7 +9,9 @@ export const API_ROLE_UPDATE = "/role/update";
 export const API_ROLE_DELETE = "/role/delete";
 export const API_ACTION_GET_BY_ROLE_ID = "/Action/GetByRoleId";
 export const API_ACTION_GET_ALL = "/Action/GetAll?sort=DESC";
-export const API_ROLE_ACTION_INSERT_MANY = "RoleAction/InsertMany";
+export const API_ROLE_ACTION_INSERT_MANY = "/RoleAction/InsertMany";
+export const API_ROLE_ACTION_CATEGORY_INSERT_MANY = "/RoleCategory/InsertMany";
+export const API_ACTION_GET_CATEGORY_BY_ROLE_ID = "/Category/GetByRoleId";
 
 export const API_USER_GET_PAGING = "/User/GetPaging";
 export const API_USER_INSERT = "/User/Insert";

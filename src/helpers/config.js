@@ -1,12 +1,12 @@
 module.exports = {
   api: {
-    API_URL: "https://bet789.mobi/api",
-    API_URL_DEV: "https://bet789.mobi/api",
+    API_URL: "https://api.shbet.news/api",
+    API_URL_DEV: "https://api.shbet.news/api",
   },
   mediaServer: {
-    API_URL: "https://api.bet789.mobi/api",
+    API_URL: "https://media.bet789.mobi/api",
     TOKEN: "Basic YWRtaW46ZjcxNDJmMmZjZDdkZTgzOTY4MmM0ZWExNGUxZWNhMDE=",
-    COLLECTIONID: "ec761ff5-4c55-400f-a9d3-d436bb24c00c",
-    URL_IMAGE: "https://api.bet789.mobi/files/storage",
+    COLLECTIONID: "5f668036-dd75-4442-a612-7facaeb6b567",
+    URL_IMAGE: "https://media.bet789.mobi/files/storage",
   },
 };

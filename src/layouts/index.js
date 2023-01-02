@@ -21,6 +21,7 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import logo from "../assets/images/taipei101.png";
 import ActionsPages from "../pages/actions";
 import GGAuthenticatorPages from "../pages/ggAuthenticator";
+import ActionsCategorysPages from "../pages/actionsCategorys";
 
 const { Header, Content, Sider } = Layout;
 const { Text } = Typography;
@@ -81,6 +82,13 @@ const authProtectedRoutes = [
         key: "actions",
         path: "/actions",
         component: <ActionsPages />,
+        icon: null,
+      },
+      {
+        label: "Phân quyền chuyên mục",
+        key: "actionsCategory",
+        path: "/actionsCategorys",
+        component: <ActionsCategorysPages />,
         icon: null,
       },
     ],

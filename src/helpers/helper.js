@@ -76,6 +76,14 @@ export const deleteUser = (data) => {
   return api.delete(`${url.API_USER_DELETE}?id=${data}`);
 };
 
+export const insertManyRoleActionCategory = (data) => {
+  return api.post(`${url.API_ROLE_ACTION_CATEGORY_INSERT_MANY}`, data);
+};
+
+export const getCategoryByRoleId = (data) => {
+  return api.get(`${url.API_ACTION_GET_CATEGORY_BY_ROLE_ID}?roleId=${data}`);
+};
+
 //manament branch
 export const getAllBranch = (data) => {
   return api.get(`${url.API_BRANCH_GET_ALL}`, data);
