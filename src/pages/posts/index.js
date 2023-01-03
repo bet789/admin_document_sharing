@@ -124,6 +124,12 @@ export default function PostPages() {
       const _res = await inserPost(_req);
       if (_res?.data === null) {
         setLoading(false);
+        if (_res?.status === -1) {
+          return api["error"]({
+            message: "Lỗi",
+            description: "Bạn không có quyền sử dụng chức năng này!",
+          });
+        }
         return api["error"]({
           message: "Lỗi",
           description: _res?.message,
@@ -142,6 +148,12 @@ export default function PostPages() {
       const _res = await updatePost(_req);
       if (_res?.data === null) {
         setLoading(false);
+        if (_res?.status === -1) {
+          return api["error"]({
+            message: "Lỗi",
+            description: "Bạn không có quyền sử dụng chức năng này!",
+          });
+        }
         return api["error"]({
           message: "Lỗi",
           description: _res?.message,
@@ -184,6 +196,13 @@ export default function PostPages() {
     const _res = await deletePost(id);
     if (_res?.status !== 1) {
       setLoading(false);
+      if (_res?.status === -1) {
+        return api["error"]({
+          message: "Lỗi",
+          description: "Bạn không có quyền sử dụng chức năng này!",
+        });
+      }
+
       return api["error"]({
         message: "Lỗi",
         description: _res?.message,
