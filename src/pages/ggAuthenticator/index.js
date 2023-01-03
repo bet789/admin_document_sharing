@@ -65,7 +65,7 @@ export default function GGAuthenticatorPages() {
       key: "qrCodeSetupImageUrl",
       dataIndex: "qrCodeSetupImageUrl",
       render: (text) => {
-        return <Image src={text} />;
+        return <Image width={100} height={100} src={text} />;
       },
     },
     {

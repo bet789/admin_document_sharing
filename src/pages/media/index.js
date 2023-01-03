@@ -12,6 +12,8 @@ import {
   Modal,
   message,
   Tooltip,
+  Input,
+  Space,
 } from "antd";
 import {
   CloudUploadOutlined,
@@ -42,7 +44,8 @@ export default function MediaPages() {
     fetchData();
   }, [JSON.stringify(pagination)]);
 
-  const fetchData = async () => {
+  const fetchData = async (params) => {
+    console.log("🚀 ~ file: index.js:48 ~ fetchData ~ params", params);
     setLoading(true);
 
     const response = await fetch(
@@ -50,7 +53,9 @@ export default function MediaPages() {
         mediaServer.API_URL
       }${API_MEDIA_GET_ALL_FILE_BY_COLLECTIONID}?collectionId=${
         mediaServer.COLLECTIONID
-      }&${qs.stringify(pagination.dataPagingnation)}`,
+      }&fileName=${params ? params : ""}&${qs.stringify(
+        pagination.dataPagingnation
+      )}`,
       {
         method: "GET",
         headers: {
@@ -115,6 +120,11 @@ export default function MediaPages() {
     fetchData();
   };
 
+  const onSearch = (value) => {
+    console.log(value);
+    fetchData(value);
+  };
+
   document.title = "Media Server";
   return (
     <>
@@ -125,13 +135,25 @@ export default function MediaPages() {
           </Typography.Title>
         </Col>
         <Col xs={24}>
-          <Button
-            type="primary"
-            icon={<CloudUploadOutlined />}
-            onClick={showModal}
-          >
-            Upload File
-          </Button>
+          <Space>
+            <Input.Search
+              placeholder="Nhập tên file"
+              allowClear
+              onSearch={onSearch}
+              style={{
+                width: 200,
+              }}
+              enterButton
+            />
+
+            <Button
+              type="primary"
+              icon={<CloudUploadOutlined />}
+              onClick={showModal}
+            >
+              Upload File
+            </Button>
+          </Space>
         </Col>
 
         {loading && (
@@ -142,13 +164,13 @@ export default function MediaPages() {
 
         {!loading && (
           <>
-            <Col sx={24}>
+            <Col xs={24}>
               <Image.PreviewGroup>
                 <Row gutter={[16, 16]} className="list-media-server">
                   {data &&
                     data.data?.map((item, i) => {
                       return (
-                        <Col sx={12} sm={6} xl={3} key={i}>
+                        <Col xs={12} sm={6} xl={3} key={i}>
                           <Card
                             loading={loading}
                             cover={
