@@ -17,6 +17,7 @@ import {
   SyncOutlined,
   EditOutlined,
   DeleteOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 
 import BreadcrumbCustom from "../../common/breadcrumb.js";
@@ -73,6 +74,7 @@ export default function CategoriesPages() {
       pageIndex: tableParams.pagination.current,
       pageSize: tableParams.pagination.pageSize,
     };
+
     const _res = await getCategoryPaging(param);
     setData(_res?.data || []);
     setTableParams({
@@ -159,6 +161,20 @@ export default function CategoriesPages() {
     setTextSave("Lưu");
   };
 
+  const onSearch = async () => {
+    setLoadingTable(true);
+    const param = {
+      pageIndex: 1,
+      pageSize: tableParams.pagination.pageSize,
+      branchId: form.getFieldValue("branhId") || "",
+      name: form.getFieldValue("name") || "",
+    };
+
+    const _res = await getCategoryPaging(param);
+    setData(_res?.data || []);
+    setLoadingTable(false);
+  };
+
   const onEdit = (id) => {
     setTextSave("Cập nhật");
     const dataEdit = data.filter((item) => item.id === id);
@@ -206,6 +222,11 @@ export default function CategoriesPages() {
       title: "Chuyên mục cha",
       dataIndex: "parentCategoryName",
       key: "parentCategoryName",
+      render: (_, record) => {
+        return `${
+          record.parentCategoryName ? record.parentCategoryName : "___"
+        } (${record.branchName})`;
+      },
     },
     {
       title: "Hành động",
@@ -313,7 +334,6 @@ export default function CategoriesPages() {
               <Input placeholder="Nhập chuyên mục" />
             </Form.Item>
           </Col>
-
           <Col span={6}>
             <Form.Item
               label="Chuyên mục cha"
@@ -363,6 +383,14 @@ export default function CategoriesPages() {
               icon={<SaveOutlined />}
             >
               {textSave}
+            </Button>
+            <Button
+              type="primary"
+              htmlType="button"
+              onClick={onSearch}
+              icon={<SearchOutlined />}
+            >
+              Tìm Kiếm
             </Button>
             <Button
               type="primary"

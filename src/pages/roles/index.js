@@ -217,6 +217,13 @@ export default function RolesPages() {
           name="roleName"
           rules={[
             {
+              pattern: new RegExp(
+                /[^_~`@#$%^&*()_={},.<>/?|àáãạảăắằẳẵặâấầẩẫậèéẹẻẽêềếểễệđìíĩỉịòóõọỏôốồổỗộơớờởỡợùúũụủưứừửữựỳỵỷỹýÀÁÃẠẢĂẮẰẲẴẶÂẤẦẨẪẬÈÉẸẺẼÊỀẾỂỄỆĐÌÍĨỈỊÒÓÕỌỎÔỐỒỔỖỘƠỚỜỞỠỢÙÚŨỤỦƯỨỪỬỮỰỲỴỶỸÝ]/u
+              ),
+              message:
+                "Vui lòng không nhập tiếng việt có dấu và ký tự đặc biệt!",
+            },
+            {
               required: true,
               message: "Vui lòng nhập tên vai trò!",
             },
