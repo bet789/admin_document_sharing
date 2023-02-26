@@ -6,7 +6,7 @@ module.exports = {
   mediaServer: {
     API_URL: "https://media.bet789.mobi/api",
     TOKEN: "Basic YWRtaW46ZjcxNDJmMmZjZDdkZTgzOTY4MmM0ZWExNGUxZWNhMDE=",
-    COLLECTIONID: "5f668036-dd75-4442-a612-7facaeb6b567",
+    COLLECTIONID: "822d10ce-3ccc-401a-8da1-dee7a776e465",
     URL_IMAGE: "https://media.bet789.mobi/files/storage",
   },
 };

@@ -109,7 +109,6 @@ export default function ActionsPages() {
   const onChangeRole = async (value) => {
     setLoading(true);
     const _res = await getByRoleId(value);
-    console.log("🚀 ~ file: index.js:112 ~ onChangeRole ~ _res", _res);
     const _items = _res?.map((item) => {
       return item.viName;
     });
