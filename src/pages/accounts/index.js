@@ -49,23 +49,28 @@ export default function AccountsPages() {
   });
 
   useEffect(() => {
-    fetchDataAccount();
     fetchDataBranch();
+    fetchDataRole();
   }, []);
 
   useEffect(() => {
-    fetchDataRole();
+    fetchDataAccount();
   }, [JSON.stringify(tableParams)]);
 
   const fetchDataAccount = async () => {
     setLoadingTable(true);
-    const _res = await getUserPaging();
+    const paramReq = {
+      pageIndex: tableParams.pagination.current,
+      pageSize: tableParams.pagination.pageSize,
+    };
+    const _res = await getUserPaging(paramReq);
+    console.log("🚀 ~ file: index.js:67 ~ fetchDataAccount ~ _res:", _res);
     setData(_res.data || []);
     setTableParams({
       ...tableParams,
       pagination: {
         ...tableParams.pagination,
-        total: _res.data?.totalRecord,
+        total: _res?.totalRecord,
       },
     });
     setLoadingTable(false);
@@ -417,7 +422,6 @@ export default function AccountsPages() {
       <Divider />
 
       <Table
-        size="middle"
         columns={columns}
         rowKey={(record) => {
           return record.id;
