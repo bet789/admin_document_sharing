@@ -275,7 +275,11 @@ export default function PostPages() {
           );
       },
     },
-
+    {
+      title: "Lượt xem",
+      dataIndex: "counts",
+      key: "counts",
+    },
     {
       title: "Người tạo",
       dataIndex: "userFullName",
