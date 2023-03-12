@@ -8,8 +8,7 @@ const { Paragraph } = Typography;
 
 const BEARER = "Bearer ";
 
-// axios.defaults.baseURL = api.API_URL;
-axios.defaults.baseURL = api.API_URL_DEV;
+axios.defaults.baseURL = api.API_URL;
 // content type
 axios.defaults.headers.post["Content-Type"] = "application/json";
 

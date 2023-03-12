@@ -1,7 +1,7 @@
 module.exports = {
   api: {
     API_URL: "https://api.shbet.news/api",
-    API_URL_DEV: "https://api.shbet.news/api",
+    // API_URL: "https://localhost:7006/api",
   },
   mediaServer: {
     API_URL: "https://media.bet789.mobi/api",

@@ -33,6 +33,7 @@ import {
   getPostPaging,
   inserPost,
   updatePost,
+  getPostById,
 } from "../../helpers/helper";
 
 import BreadcrumbCustom from "../../common/breadcrumb.js";
@@ -171,25 +172,29 @@ export default function PostPages() {
   };
 
   const onFinishFailed = async (values) => {};
-  const onEdit = (id) => {
-    setTextSave("Cập nhật");
-    const dataEdit = listPost.filter((item) => item.id === id);
 
-    console.log("dataEdit[0].content: ", dataEdit[0].content);
+  const onEdit = async (id) => {
+    setTextSave("Cập nhật");
+    // const dataEdit = listPost.filter((item) => item.id === id);
+
+    const dataEdit = await getPostById({ id: id, isEdit: true });
+
+    console.log("🚀 ~ file: index.js:181 ~ onEdit ~ dataEdit:", dataEdit);
 
     form.setFieldsValue({
-      id: dataEdit[0].id,
-      categoryId: dataEdit[0].categoryId,
-      title: dataEdit[0].title,
-      description: dataEdit[0].description,
-      thumbnail: dataEdit[0].thumbnail,
-      content: dataEdit[0].content,
+      id: dataEdit?.data?.id,
+      categoryId: dataEdit?.data?.categoryId,
+      title: dataEdit?.data?.title,
+      description: dataEdit?.data?.description,
+      thumbnail: dataEdit?.data?.thumbnail,
+      content: dataEdit?.data?.content,
     });
+
     setOpen(true);
     setShowEditor(true);
-    setFileThumb(dataEdit[0].thumbnail);
-    setCheckedShow(dataEdit[0].status === 0 ? true : false);
-    setContent(dataEdit[0].content);
+    setFileThumb(dataEdit?.data?.thumbnail);
+    setCheckedShow(dataEdit?.data?.status === 0 ? true : false);
+    setContent(dataEdit?.data?.content);
   };
 
   const onDelete = async (id) => {

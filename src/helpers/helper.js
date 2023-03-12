@@ -127,6 +127,10 @@ export const getPostPaging = (data) => {
   return api.get(`${url.API_POST_GET_PAGING}`, data);
 };
 
+export const getPostById = (data) => {
+  return api.get(`${url.API_POST_GET_BY_ID}`, data);
+};
+
 export const inserPost = (data) => {
   return api.post(`${url.API_POST_INSERT}`, data);
 };

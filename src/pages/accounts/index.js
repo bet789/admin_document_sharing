@@ -64,7 +64,6 @@ export default function AccountsPages() {
       pageSize: tableParams.pagination.pageSize,
     };
     const _res = await getUserPaging(paramReq);
-    console.log("🚀 ~ file: index.js:67 ~ fetchDataAccount ~ _res:", _res);
     setData(_res.data || []);
     setTableParams({
       ...tableParams,

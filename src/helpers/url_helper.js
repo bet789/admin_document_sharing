@@ -38,6 +38,7 @@ export const API_CATEGORY_DELETE = "/Category/Delete";
 
 //Management posts
 export const API_POST_GET_PAGING = "/Post/GetPaging";
+export const API_POST_GET_BY_ID = "/Post/GetById";
 export const API_POST_INSERT = "/Post/Insert";
 export const API_POST_UPDATE = "/Post/Update";
 export const API_POST_DELETE = "/Post/Delete";
